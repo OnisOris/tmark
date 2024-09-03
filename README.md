@@ -28,3 +28,11 @@ tracker.save_to_csv()
 tracker.plot_from_csv()
 ```
 ![alt text](img.png "Title")
+
+# Возможные ошибки
+/.../.venv/lib/python3.10/site-packages/tmark/latency_tracker.py:88: UserWarning: FigureCanvasAgg is non-interactive,
+and thus cannot be shown plt.show()
+
+## Решение:
+
+pip install PyQt6

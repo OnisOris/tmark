@@ -16,7 +16,7 @@ setup(
     long_description_content_type='text/markdown',
     url='https://github.com/OnisOris/tmark',
     packages=find_packages(),
-    install_requires=['matplotlib', 'numpy, pandas'],
+    install_requires=['matplotlib', 'numpy', 'pandas'],
     classifiers=[
         'Programming Language :: Python :: 3.12',
         'License :: OSI Approved :: GNU General Public License v2 (GPLv2)',
