@@ -1,10 +1,10 @@
 import tmark as tm
 import time
-# Пример использования
+
 tracker = tm.LatencyTracker()
 
 # Имитация выполнения цикла с несколькими метками в одной итерации
-for i in range(12):
+for i in range(4):
     tracker.start("operation_1")
     time.sleep(0.1 + i * 0.02)  # Симуляция первой операции
     tracker.stop("operation_1")
@@ -17,5 +17,8 @@ for i in range(12):
     time.sleep(0.15 + i * 0.01)  # Симуляция третьей операции
     tracker.stop("operation_3")
 
-# Построение графика
-tracker.plot()
+# Сохранение в csv файл
+tracker.save_to_csv()
+
+# Чтение из csv файла и построение графика
+tracker.plot_from_csv()
