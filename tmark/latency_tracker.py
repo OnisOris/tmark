@@ -25,7 +25,7 @@ class LatencyTracker:
 
     def start(self, label: str) -> None:
         """
-        Фиксирует время начала выполнения участка кода с указанной меткой.
+        Records the start time of the code section with the specified tag.
         """
         index = np.where(label == self.labels)[0]
         if not index.shape == (0,):
@@ -37,7 +37,7 @@ class LatencyTracker:
 
     def stop(self, label: str) -> None:
         """
-        Фиксирует время окончания выполнения участка кода с указанной меткой и вычисляет задержку.
+        Records the time of completion of the code section with the specified tag and calculates the delay
         """
         end_time = time.time() - self.t0
         index = np.where(label == self.labels)[0]
@@ -46,52 +46,67 @@ class LatencyTracker:
         else:
             item = -1
         self.data[item].end_times = np.hstack([self.data[item].end_times, end_time])
-        # Вычисляем задержку и сохраняем её
+        # Calculate the delay and save it
         latency = end_time - self.data[item].starts_times[-1]
         self.data[item].latencies = np.hstack([self.data[item].latencies, latency])
 
-        # Сохраняем текущее время для оси X
+        # Save current time for X axis
         self.data[item].timestamps = np.hstack([self.data[item].timestamps, end_time])
 
-    def plot(self) -> None:
+    def plot(self, statistic: bool = False, accuracy: int = 4) -> None:
         """
-        Строит графики задержек для каждой метки.
+        Builds delay schedules for each tag
         """
         plt.figure()
+        str_stat = ''
         for index_table, table in enumerate(self.data):
+            if statistic:
+                r = accuracy
+                mean = np.round(table.latencies.mean(), r)
+                median = np.round(np.median(table.latencies), r)
+                maximum = np.round(table.latencies.max(), r)
+                minimum = np.round(table.latencies.min(), r)
+                str_stat += f'\n{table.label}: mean = {mean}, median = {median}, max = {maximum}, min = {minimum}'
             m = table.matrix()
             plt.plot(m[3], m[2], marker='o', label=f"{table.label}")
-
-        plt.xlabel('Время [с]')
-        plt.ylabel('Задержка [с]')
-        plt.title('График задержек по времени для разных меток')
+        plt.xlabel('Time [s]')
+        plt.ylabel('Latency [с]')
+        plt.title('Latencies')
         plt.legend()
         plt.grid(True)
         plt.show()
+        print('Stat:' + str_stat)
 
-    def plot_from_csv(self, path: str = './csv/'):
+    def plot_from_csv(self, path: str = './csv/', statistic: bool = False, accuracy: int = 4):
         """
-        Строим график из всех файлов внутри папки с csv файлами, объединяя их
+        Plot all files inside the csv folder, combining them
         """
         import os
         files = os.listdir(path)
-        print(files)
+        print(f"File read: {files}")
         plt.figure()
+        str_stat = 'Stat:'
         for file in files:
             df = pd.read_csv(f'{path}{file}', index_col=0)
             plt.plot(df['t'], df['latencies'], label=f'{file}', marker='o')
+            if statistic:
+                r = accuracy
+                mean = np.round(df['latencies'].mean(), r)
+                median = np.round(df['latencies'].median(), r)
+                maximum = np.round(df['latencies'].max(), r)
+                minimum = np.round(df['latencies'].min(), r)
+                str_stat += f'\n{file}: mean = {mean}, median = {median}, max = {maximum}, min = {minimum}'
         plt.xlabel('Time [s]')
         plt.ylabel('Latency [s]')
         plt.title('Latencies')
         plt.legend()
         plt.grid(True)
         plt.show()
+        print(str_stat)
 
     def save_to_numpy(self, path: str = './numpy/') -> None:
         """
-        Сохранение в npy файл всего массива
-        :param path:
-        :return:
+        Save the whole array to npy
         """
         import numpy as np
         from os.path import isdir
@@ -101,13 +116,19 @@ class LatencyTracker:
         array = self.vstack_data()
         np.save(f'{path}data.npy', array[1:])
 
-    def vstack_data(self):
+    def vstack_data(self) -> np.ndarray:
+        """
+        Function compiles all information into matrix
+        """
         array = np.zeros(self.data[0].starts_times.shape)
         for table in self.data:
             array = np.vstack([array, table.matrix()])
         return array[1:]
 
     def save_to_csv(self, path: str = './csv/') -> None:
+        """
+        Save as csv file
+        """
         from os.path import isdir
         if not isdir(path):
             from os import mkdir
@@ -120,6 +141,9 @@ class LatencyTracker:
             df.to_csv(f'{path}data_{table.label}.csv')
 
     def get_labels(self) -> np.ndarray:
+        """
+        Returns labels
+        """
         labels = np.array([])
         for table in self.data:
             labels = np.hstack([labels, table.label])

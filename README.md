@@ -1,5 +1,18 @@
-# Описание
-Данный модуль предназначен для установки временных меток в коде, удобно использовать в циклах.
+# Description
+This module is designed for setting time stamps in code, convenient to use in cycles.
+
+# Installing
+```Shell
+pip install tmark
+```
+
+or
+
+```Shell
+pip install git+https://github.com/OnisOris/tmark
+```
+
+# Example
 
 ```python
 import tmark as tm
@@ -7,32 +20,36 @@ import time
 
 tracker = tm.LatencyTracker()
 
-# Имитация выполнения цикла с несколькими метками в одной итерации
-for i in range(4):
+# Simulation of a cycle with multiple tags in one iteration
+for i in range(12):
     tracker.start("operation_1")
-    time.sleep(0.1 + i * 0.02)  # Симуляция первой операции
+    time.sleep(0.1 + i * 0.02)  # Simulation of first operation
     tracker.stop("operation_1")
 
     tracker.start("operation_2")
-    time.sleep(0.2 + i * 0.03)  # Симуляция второй операции
+    time.sleep(0.2 + i * 0.03)  # Simulation of the second operation
     tracker.stop("operation_2")
 
     tracker.start("operation_3")
-    time.sleep(0.15 + i * 0.01)  # Симуляция третьей операции
+    time.sleep(0.15 + i * 0.01)  # Simulation of the third operation
     tracker.stop("operation_3")
-    
-# Сохранение в csv файл
+
+# Graph from object data
+tracker.plot(statistic=True)
+
+# Save to csv file
 tracker.save_to_csv()
 
-# Чтение из csv файла и построение графика
+# Reading from csv file and plotting
 tracker.plot_from_csv()
 ```
-![alt text](img.png "Title")
 
-# Возможные ошибки
+![Graphic](https://github.com/OnisOris/tmark/blob/main/img.png)
+
+# Possible errors
 /.../.venv/lib/python3.10/site-packages/tmark/latency_tracker.py:88: UserWarning: FigureCanvasAgg is non-interactive,
 and thus cannot be shown plt.show()
 
-## Решение:
+## Solution:
 
 pip install PyQt6

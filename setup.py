@@ -8,7 +8,7 @@ def readme():
 
 setup(
     name='tmark',
-    version='0.0.2',
+    version='0.0.3',
     author='OnisOris',
     author_email='onisoris@yandex.ru',
     description='Time marking package in code.',
