@@ -17,10 +17,12 @@ class Table:
 
 
 class LatencyTracker:
-    def __init__(self):
+    def __init__(self, accuracy: int = 5):
         self.labels = np.array([])
         self.data = np.array([])
-        self.t0 = time.time()
+        self.accuracy = accuracy
+        self.t0 = np.round(time.time(), self.accuracy)
+
 
 
     def start(self, label: str) -> None:
@@ -29,17 +31,19 @@ class LatencyTracker:
         """
         index = np.where(label == self.labels)[0]
         if not index.shape == (0,):
-            self.data[index[0]].starts_times = np.hstack([self.data[index[0]].starts_times, time.time() - self.t0])
+            self.data[index[0]].starts_times = np.hstack([self.data[index[0]].starts_times,
+                                                          np.round(time.time(), self.accuracy) - self.t0])
         else:
             self.labels = np.hstack([self.labels, label])
             self.data = np.hstack([self.data, Table(label)])
-            self.data[-1].starts_times = np.hstack([self.data[-1].starts_times, time.time() - self.t0])
+            self.data[-1].starts_times = np.hstack([self.data[-1].starts_times,
+                                                    np.round(time.time(), self.accuracy) - self.t0])
 
     def stop(self, label: str) -> None:
         """
         Records the time of completion of the code section with the specified tag and calculates the delay
         """
-        end_time = time.time() - self.t0
+        end_time = np.round(time.time(), self.accuracy) - self.t0
         index = np.where(label == self.labels)[0]
         if not index.shape == (0,):
             item = index[0]
