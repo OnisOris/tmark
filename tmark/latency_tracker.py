@@ -108,11 +108,10 @@ class LatencyTracker:
         """
         Save the whole array to npy
         """
-        import numpy as np
         from os.path import isdir
         if not isdir(path):
-            from os import mkdir
-            mkdir('numpy')
+            from os import makedirs
+            makedirs(path, exist_ok=True)
         array = self.vstack_data()
         np.save(f'{path}data.npy', array[1:])
 
@@ -131,8 +130,8 @@ class LatencyTracker:
         """
         from os.path import isdir
         if not isdir(path):
-            from os import mkdir
-            mkdir('csv')
+            from os import makedirs
+            makedirs(path, exist_ok=True)
         for table in self.data:
             df = pd.DataFrame(table.matrix().T, columns=[f'starts_times',
                                                          f'end_times',
