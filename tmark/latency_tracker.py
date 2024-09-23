@@ -91,6 +91,9 @@ class LatencyTracker:
         plt.figure()
         str_stat = 'Stat:'
         for file in files:
+            lf = len(file)
+            if file[lf-4:lf] != ".csv":
+                continue
             df = pd.read_csv(f'{path}{file}', index_col=0)
             plt.plot(df['t'], df['latencies'], label=f'{file}', marker='o')
             if statistic:
